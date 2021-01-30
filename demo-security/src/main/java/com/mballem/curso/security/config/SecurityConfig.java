@@ -21,7 +21,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(usuarioService).passwordEncoder(new BCryptPasswordEncoder());
-		//super.configure(auth);
 	}
 
 	@Override
@@ -32,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/webjars/**", "/css/**", "/image/**", "/js/**").permitAll()
 			.antMatchers("/", "/home").permitAll()
 			
+			.antMatchers("/u/**").hasAuthority("ADMIN")
+			.antMatchers("/medicos/**").hasAuthority("MEDICO")
+			
 			.anyRequest().authenticated()
 			.and()
 				.formLogin()
@@ -41,7 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.permitAll()
 			.and()
 				.logout()
-				.logoutSuccessUrl("/");
+				.logoutSuccessUrl("/")
+			.and()
+				.exceptionHandling()
+					.accessDeniedPage("/acesso-negado")
 			;
 	}
 }
