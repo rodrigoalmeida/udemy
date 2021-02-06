@@ -76,8 +76,12 @@ public class Datatables {
 		return sort;
 	}
 
-	public String getSearch() {		
-		return this.request.getParameter("search[value]");
+	public String getSearch() {	
+		String search = this.request.getParameter("search[value]");
+		if (search == null) {
+			return "";
+		}
+		return search;
 	}
 	
 	public Pageable getPageable() {
