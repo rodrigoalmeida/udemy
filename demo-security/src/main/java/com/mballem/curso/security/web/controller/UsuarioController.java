@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.mballem.curso.security.domain.Medico;
 import com.mballem.curso.security.domain.Perfil;
 import com.mballem.curso.security.domain.PerfilTipo;
 import com.mballem.curso.security.domain.Usuario;
+import com.mballem.curso.security.service.MedicoService;
 import com.mballem.curso.security.service.UsuarioService;
 
 @Controller
@@ -26,9 +28,14 @@ public class UsuarioController {
 
 	private UsuarioService usuarioService;
 
-	public UsuarioController(UsuarioService usuarioService) {
+	private MedicoService medicoService;
+	
+	
+
+	public UsuarioController(UsuarioService usuarioService, MedicoService medicoService) {
 		super();
 		this.usuarioService = usuarioService;
+		this.medicoService = medicoService;
 	}
 
 	@GetMapping("/novo/cadastro/usuario")
@@ -85,7 +92,10 @@ public class UsuarioController {
 		if (isAdmin && !isMedico) {
 			return new ModelAndView("usuario/cadastro", "usuario", us);
 		} else if (isMedico) {
-			return new ModelAndView("especialidade/especialidade");
+			Medico medico = medicoService.buscarPorUsuarioId(id);
+			return medico.hasNotId()
+					? new ModelAndView("medico/cadastro", "medico", new Medico(new Usuario(id)))
+					: new ModelAndView("medico/cadastro", "medico", medico);
 		} else if (isPaciente) {
 			ModelAndView model = new ModelAndView("error");
 			model.addObject("status", 403);
